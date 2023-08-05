@@ -13,8 +13,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
 @Entity
-@FilterDef(name = "titulos.like", parameters = @ParamDef(name = "name", type = String.class))
-@Filter(name = "titulos.like", condition = "LOWER(name) LIKE LOWER(:titulos)")
+@FilterDef(name = "titulos.like", parameters = @ParamDef(name = "titulos", type = String.class))
+@Filter(name = "titulos.like", condition = "LOWER(titulos) LIKE LOWER(:titulos)")
 public class Title {
 
     @Id
@@ -31,10 +31,6 @@ public class Title {
     @UpdateTimestamp
     @JsonIgnore
     private LocalDateTime updateAt;
-
-    public int getClassification(){
-        return titulos.length();
-    }
 
     public Long getId() {
         return id;

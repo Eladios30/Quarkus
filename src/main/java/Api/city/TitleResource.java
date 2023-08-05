@@ -16,9 +16,15 @@ import java.util.NoSuchElementException;
 @Transactional
 public class TitleResource {
 
-    @Inject
     private TitleRepository title;
 
+    public TitleMapper tlm;
+
+    @Inject
+    public TitleResource(TitleRepository title, TitleMapper tlm){
+        this.title = title;
+        this.tlm = tlm;
+    }
     @GET
     public PaginatedResponse<Title> list(@QueryParam("page")
                                          @DefaultValue("1") int page,
@@ -33,9 +39,10 @@ public class TitleResource {
     }
 
     @POST
-    public Response create(Title titles){
-        title.persist(titles);
-        return Response.created(URI.create("/titles/" + titles.getId())).entity(titles).build();
+    public Response create(CreateTitleDto titles){
+        var entity = tlm.fromCreate(titles);
+        title.persist(entity);
+        return Response.created(URI.create("/titles/" + entity.getId())).entity(entity).build();
     }
 
     @GET
@@ -47,11 +54,11 @@ public class TitleResource {
 
     @PUT
     @Path("{id}")
-    public Title update (@PathParam("id") Long id, Title title2){
+    public Title update (@PathParam("id") Long id, UpdateTitleDto title2){
         Title found = title.findByIdOptional(id)
                 .orElseThrow(() -> new NoSuchElementException("Title " + id + " not found"));
 
-        found.setTitulos(title2.getTitulos());
+        tlm.update(title2, found);
 
         title.persist(found);
 
